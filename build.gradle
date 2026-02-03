@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id "org.sonarqube" version "6.0.1.5171"
 }
 
 group = 'com.bits.mvn'
@@ -18,23 +19,30 @@ dependencies {
     // JUnit 5 dependencies for AppTest.java
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-
-    // MANDATORY for Gradle 9.x: The Launcher
+    
+    // NEW: Required for Gradle 8.x and 9.x to launch tests
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
-    // Step B.2: Automatically runs jacocoTestReport after tests finish
+    // Automatically runs jacocoTestReport after tests finish
     finalizedBy jacocoTestReport 
 }
 
 jacocoTestReport {
     dependsOn test
     reports {
-        // Required for Task 1: Step C (HTML report)
         html.required = true
-        // Required for Task 3: SonarQube integration
         xml.required = true
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "bits-ls3-2023vz70038"
+        property "sonar.projectName", "Gradle-demo"
+        // Ensure this matches the exact location of your JaCoCo XML report
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
